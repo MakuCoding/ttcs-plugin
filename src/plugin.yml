@@ -1,0 +1,24 @@
+name: TTCS
+version: 1.0.1
+author: Maku
+main: de.Maku.ttcs.main.Main
+
+commands:
+  train:
+    usage: /train announce|list|remove|delay|arrive|depart
+  bug:
+    usage: /bug report <Bugreport>
+    
+permissions:
+  ttcs.train.announce:
+    default: op
+  ttcs.train.list:
+    default: true
+  ttcs.train.remove:
+    default: op
+  ttcs.train.delay:
+    default: op
+  ttcs.train.arrive:
+    default: op
+  ttcs.train.depart:
+    default: op
