@@ -36,7 +36,7 @@ public class Trains {
 		
 		String type = "";
 		String number = "";
-		Trains neu = new Trains();
+		Trains neu = null;
 		
 		if (plugin.traintypes.getTypes().contains(id.substring(0, 2).toUpperCase())) {
 			type = id.substring(0, 2).toUpperCase();
@@ -70,7 +70,7 @@ public class Trains {
 			}
 		}
 		
-		if (neu != new Trains()) trains.add(neu);
+		if (neu != null) trains.add(neu);
 		return neu;
 	}
 	
@@ -232,18 +232,7 @@ public class Trains {
 		this.player = player;
 		this.checker = null;
 	}
-	
-	public Trains() {
-		this.type = "";
-		this.number = "";
-		this.stops = new ArrayList<>();
-		this.hour = 0;
-		this.min = 0;
-		this.stopindex = 0;
-		this.delay = 0;
-		this.delayReason = "";
-	}
-	
+
 	public String getType() {
 		return this.type;
 	}

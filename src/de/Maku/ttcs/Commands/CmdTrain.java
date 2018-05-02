@@ -23,7 +23,7 @@ public class CmdTrain implements Command {
 
 	@Override
 	public boolean execute(String[] args, Player p) {
-		Trains train = new Trains();
+		Trains train = null;
 		if (args.length > 0) {
 			switch (args[0].toLowerCase()) {
 	
@@ -44,7 +44,7 @@ public class CmdTrain implements Command {
 							p.sendMessage(plugin.prefix + ChatColor.DARK_RED + "Du musst eine Zeit im Format HH:MM angeben");
 						}
 						train = Trains.addTrain(args[1], stops, hour, min, p, plugin);
-						if (train == null || train == new Trains()) {
+						if (train == null) {
 							p.sendMessage(plugin.prefix + ChatColor.DARK_RED + "Diese Zugnummer ist schon vorhanden/Es gibt dieses Kürzel nicht!");
 							return true;
 						} else {

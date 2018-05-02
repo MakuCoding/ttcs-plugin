@@ -33,8 +33,12 @@ public class Checker extends Thread {
 					text = "";
 				}
 				if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + 5 == train.getCrHour()) {
+					Trains.remTrain(train);
 					break;
-				} else if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) != train.getDay())
+				} else if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) != train.getDay() && train.getCrHour() >= 5) {
+					Trains.remTrain(train);
+					break;
+				}
 				Thread.sleep(60000);
 			} catch (Exception e) {}
 		}
