@@ -1,5 +1,5 @@
 name: TTCS
-version: 1.0.1
+version: 1.0.2
 author: Maku
 main: de.Maku.ttcs.main.Main
 
@@ -21,4 +21,6 @@ permissions:
   ttcs.train.arrive:
     default: op
   ttcs.train.depart:
+    default: op
+  ttcs.train.skip:
     default: op

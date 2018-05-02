@@ -112,7 +112,7 @@ public class CmdTrain implements Command {
 				}
 				
 			case "remove":
-			case "rm":
+			case "rem":
 				if (p.hasPermission("ttcs.train.remove")) {
 					if (args.length == 2) {
 						train = Trains.remTrain(args[1]);
@@ -142,6 +142,7 @@ public class CmdTrain implements Command {
 				}
 				
 			case "delay":
+			case "del":
 				if (p.hasPermission("ttcs.train.delay")) {
 					int delay = 0;
 					try {
@@ -206,6 +207,7 @@ public class CmdTrain implements Command {
 				
 			case "arrive":
 			case "arrival":
+			case "arr":
 				if ( p.hasPermission("ttcs.train.arrive")) {
 					if (args.length == 2) {
 						train = Trains.getTrain(args[1]);
@@ -271,6 +273,7 @@ public class CmdTrain implements Command {
 				
 			case "depart":
 			case "depature":
+			case "dep":
 				if (p.hasPermission("ttcs.train.depart")) {
 					if (args.length == 2) {
 						train = Trains.depart(args[1]);
@@ -279,11 +282,7 @@ public class CmdTrain implements Command {
 								train = tp.get(p);
 								Trains.depart(train);
 								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + " fährt jetzt von " + train.getStops().get(train.getStopIndex() - 1) + " ab!");
-								try {
-									if (train.getChecker().isAlive()) {
-										train.getChecker().interrupt();
-									}
-								} catch (Exception e) {}
+								train.setChecker(new Checker(plugin, train));
 								tp.put(p, train);
 								return true;
 							} else {
@@ -306,7 +305,7 @@ public class CmdTrain implements Command {
 						try {
 							dephour = Integer.parseInt(args[2].split(":")[0]);
 							depmin = Integer.parseInt(args[2].split(":")[1]);
-						} catch (Exception e1) {
+						} catch (Exception e) {
 							p.sendMessage(plugin.prefix + ChatColor.DARK_RED + "Die eingegeben Uhrzeit ist ungültig! Format: HH:MM");
 							return true;
 						}
@@ -334,6 +333,33 @@ public class CmdTrain implements Command {
 					} else {
 						p.sendMessage(plugin.prefix + ChatColor.DARK_RED + "Du hast falsche Parameter übergeben!");
 						p.sendMessage(plugin.prefix + ChatColor.RESET + "Syntax: /train depart <Zugtyp + Zugnummer|ID(aus der Liste)> [Abfahrtszeit]");
+						return true;
+					}
+				}
+				
+			case "skip":
+			case "sk":
+				if (p.hasPermission("ttcs.train.skip")) {
+					if (args.length == 2) {
+						train = Trains.skip(args[1]);
+						if (train == null) {
+							if (args[1].equalsIgnoreCase("my") && tp.containsKey(p)) {
+								train = tp.get(p);
+								Trains.skip(train);
+								p.sendMessage(plugin.prefix + ChatColor.GREEN + "Die aktuelle Haltestelle wurde übersprungen. Die nächste ist nun " + train.getStops().get(train.getStopIndex()));
+								return true;
+							} else {
+								p.sendMessage(plugin.prefix + ChatColor.DARK_RED + "Es wurde kein Zug mit dieser Bezeichnung gefunden!");
+								return true;
+							}
+						} else {
+							p.sendMessage(plugin.prefix + ChatColor.GREEN + "Die aktuelle Haltestelle wurde übersprungen. Die nächste ist nun " + train.getStops().get(train.getStopIndex()));
+							tp.put(p, train);
+							return true;
+						}
+					} else {
+						p.sendMessage(plugin.prefix + ChatColor.DARK_RED + "Du hast falsche Parameter übergeben!");
+						p.sendMessage(plugin.prefix + ChatColor.RESET + "Syntax: /train skip <Zugtyp + Zugnummer|ID(aus der Liste)>");
 						return true;
 					}
 				}

@@ -29,7 +29,7 @@ public class Checker extends Thread {
 			try {
 				if (text != "" && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == train.getHour() && Calendar.getInstance().get(Calendar.MINUTE) == train.getMin()) {
 					Bukkit.broadcastMessage(plugin.prefix + text);
-					train.addStopIndex();
+					if (train.getStopIndex() < train.getStops().size() - 1) train.addStopIndex();
 					text = "";
 				}
 				if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + 5 == train.getCrHour()) {

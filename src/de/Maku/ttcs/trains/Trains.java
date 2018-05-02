@@ -155,8 +155,8 @@ public class Trains {
 			if (train.getStopIndex() < train.getStops().size() - 1) train.addStopIndex();
 		} catch (Exception e) {
 			for (Trains t:trains) {
-				if ((t.getType() + t.getNumber()).equalsIgnoreCase(id) && t.getStopIndex() < t.getStops().size() - 1) {
-					t.addStopIndex();
+				if ((t.getType() + t.getNumber()).equalsIgnoreCase(id)) {
+					if (t.getStopIndex() < train.getStops().size() - 1) t.addStopIndex();
 					return t;
 				}
 			}
@@ -166,7 +166,7 @@ public class Trains {
 	
 	public static void depart(Trains train) {
 		if (trains.contains(train)) {
-			train.addStopIndex();
+			if (train.getStopIndex() < train.getStops().size() - 1)	train.addStopIndex();
 		}
 	}
 	
@@ -174,19 +174,15 @@ public class Trains {
 		Trains train = null;
 		try {
 			train = trains.get(Integer.parseInt(id) - 1);
-			if (train.getStopIndex() < train.getStops().size() - 1) {
 				train.setHour(dephour);
 				train.setMin(depmin);
 				train.setDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-			}
 		} catch (Exception e) {
 			for (Trains t:trains) {
 				if ((t.getType() + t.getNumber()).equalsIgnoreCase(id)) {
-					if (t.getStopIndex() < t.getStops().size()) {
 						t.setHour(dephour);
 						t.setMin(depmin);
 						t.setDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-					}
 					return t;
 				}
 			}
@@ -200,6 +196,26 @@ public class Trains {
 			train.setMin(depmin);
 			train.setDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
 		}
+	}
+	
+	public static Trains skip(String id) {
+		Trains train = null;
+		try {
+			train = trains.get(Integer.parseInt(id) - 1);
+			if (train.getStopIndex() < train.getStops().size() - 1) train.addStopIndex();
+		} catch (Exception e) {
+			for (Trains t:trains) {
+				if ((t.getType() + t.getNumber()).equalsIgnoreCase(id)) {
+					if (t.getStopIndex() < t.getStops().size() - 1) t.addStopIndex();
+					return t;
+				}
+			}
+		}
+		return train;
+	}
+	
+	public static void skip(Trains train) {
+		if (trains.contains(train) && train.getStopIndex() < train.getStops().size() - 1) train.addStopIndex();
 	}
 	
 	public static Trains getTrain(String id) {
