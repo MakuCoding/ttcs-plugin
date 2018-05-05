@@ -63,11 +63,11 @@ public class CmdTrain implements Command {
 								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + " fährt jetzt" + sb.toString());
 								p.sendMessage(plugin.prefix + ChatColor.DARK_GREEN + "Der Zug wurde angekündigt!");
 								train.setChecker(new Checker(plugin, train));
+								train.addStopIndex();
 								return true;
 							} else {
 								String text = train.getColor() + train.getType() + train.getNumber() + " fährt jetzt von " + train.getStops().get(train.getStopIndex()) + " ab!";
 								train.setChecker(new Checker(plugin, train, text));
-								
 								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + ": Abfahrt um " + train.getTime() + " Uhr" + sb.toString());
 								p.sendMessage(plugin.prefix + ChatColor.DARK_GREEN + "Der Zug wurde angekündigt!");
 								return true;
@@ -104,7 +104,7 @@ public class CmdTrain implements Command {
 					if (trains.size() > 0) {
 					p.sendMessage("----------------Angekündigte Zugfahrten----------------\n" +
 								sb.toString() + ChatColor.RESET
-								+ "----------------------------------------------------------");
+								+ "-----------------------------------------------------");
 					} else {
 						p.sendMessage(plugin.prefix + ChatColor.DARK_RED + "Es sind keine Zugfahrten angekündigt!");
 					}
@@ -215,7 +215,7 @@ public class CmdTrain implements Command {
 							if (args[1].equalsIgnoreCase("my") && tp.containsKey(p)) {
 								train = tp.get(p);
 								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + ": Nächster Halt: " +
-										train.getStops().get(train.getStopIndex()) + (train.getStops().size() == train.getStopIndex() + 1?
+										train.getStops().get(train.getStopIndex()) + (train.getStops().size() == train.getStopIndex() && train.getEVU() != "DB Cargo" + 1?
 										"\nDieser Zug endet hier! Wir bitten alle Fahrgäste auszusteigen, verabschieden uns im Namen der "
 										+ train.getEVU() + " und wünschen Ihnen noch einen angenehmen Tag!":""));
 								tp.put(p, train);
@@ -226,7 +226,7 @@ public class CmdTrain implements Command {
 							}
 						} else {
 							Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + ": Nächster Halt: " +
-									train.getStops().get(train.getStopIndex()) + (train.getStops().size() == train.getStopIndex() + 1?
+									train.getStops().get(train.getStopIndex()) + (train.getStops().size() == train.getStopIndex() && train.getEVU() != "DB Cargo" + 1?
 									"\nDieser Zug endet hier! Wir bitten alle Fahrgäste auszusteigen, verabschieden uns im Namen der "
 									+ train.getEVU() + " und wünschen Ihnen noch einen angenehmen Tag!":""));
 							tp.put(p, train);
@@ -363,6 +363,47 @@ public class CmdTrain implements Command {
 						return true;
 					}
 				}
+				
+			case "say":
+				if (p.hasPermission("ttcs.train.say") && args.length > 2) {
+					if (args.length > 2) {
+						String text = "";
+						train = Trains.getTrain(args[1]);
+						if (train == null) {
+							if (tp.containsKey(p) && Trains.getTrains().contains(tp.get(p))) {
+								train = tp.get(p);
+							} else {
+								p.sendMessage(plugin.prefix + ChatColor.DARK_RED + "Es wurde kein Zug mit dieser Bezeichnung gefunden!");
+								return true;
+							}
+						} else {
+							for (int i = 2;i < args.length;i++) {
+								text = text + " " + args[i];
+							}
+							Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + ": " + text);
+							return true;
+						}
+					} else {
+						p.sendMessage(plugin.prefix + ChatColor.DARK_RED + "Du hast falsche Parameter übergeben!");
+						p.sendMessage(plugin.prefix + ChatColor.RESET + "Syntax: /train say <Zugtyp + Zugnummer|ID(aus der Liste)> <Nachricht>");
+						return true;
+					}
+					return true;
+				}
+				
+			case "types":
+				if (p.hasPermission("ttcs.train.announce")) {
+					StringBuilder sb = new StringBuilder();
+					for (String evu:plugin.traintypes.getEVUs()) {
+						sb.append("\n" + ChatColor.getByChar(plugin.traintypes.getColor(evu)) + evu + ": ");
+						for (String type:plugin.traintypes.getTypes(evu)) {
+							sb.append(type + ", ");
+						}
+						sb.delete(sb.length() - 2, sb.length());
+					}
+					p.sendMessage(plugin.prefix + "Verfügbare Zuggattungen:" + sb.toString());
+				}
+				return true;
 				
 			}
 		} else {

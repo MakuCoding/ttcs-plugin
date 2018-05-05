@@ -237,9 +237,9 @@ public class Trains {
 		this.stops = stops;
 		this.day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		this.hour = hour;
-		this.hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+		this.crhour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 		this.min = min;
-		this.min = Calendar.getInstance().get(Calendar.MINUTE);
+		this.crmin = Calendar.getInstance().get(Calendar.MINUTE);
 		this.stopindex = 0;
 		this.delay = 0;
 		this.delayReason = "";
@@ -262,10 +262,15 @@ public class Trains {
 	}
 	
 	public String getTime() {
-		if (this.min < 10) {
-			return this.hour + ":" + "0" + this.min;
+		if (this.min < 10 && this.hour > 9) {
+			return this.hour + ":0" + this.min;
+		} else if (this.min > 9 && this.hour < 10) {
+			return "0" + this.hour + ":" + this.min;
+		} else if (this.min > 10 && this.hour > 10) {
+			return "0" + this.hour + ":0" + this.min;
+		} else {
+			return this.hour + ":" + this.min;
 		}
-		return this.hour + ":" + this.min;
 	}
 	
 	public int getDay() {
@@ -385,6 +390,7 @@ public class Trains {
 			if (this.checker.isAlive()) this.checker.interrupt();
 		} catch (Exception e) {}
 		this.checker = checker;
+		this.checker.start();
 	}
 	
 }
