@@ -364,6 +364,12 @@ public class CmdTrain implements Command {
 					}
 				}
 				
+			case "types":
+				if (p.hasPermission("ttcs.train.announce")) {
+					p.sendMessage(plugin.prefix + ChatColor.RESET + "Verfügbare Zuggattungen:\n"
+						+ String.join(", ", TrainTypes.getTypes());
+				}
+				return true;
 			}
 		} else {
 			p.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Train Announcer von Maku\n" + ChatColor.RESET + "Für Hilfe gebe /train help ein");
