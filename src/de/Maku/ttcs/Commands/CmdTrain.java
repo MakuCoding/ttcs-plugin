@@ -422,6 +422,9 @@ public class CmdTrain implements Command {
 				+ "/train delay <Zugtyp + Zugnummer|ID(aus der Liste)|my> <Uhrzeit> [Grund]\n"
 				+ "/train arrive <Zugtyp + Zugnummer|ID(aus der Liste)|my> [Uhrzeit]\n"
 				+ "/train depart <Zugtyp + Zugnummer|ID(aus der Liste)|my> [Uhrzeit]\n"
+				+ "/train skip <Zugtyp + Zugnummer|ID(aus der Liste)|my>"
+				+ "/train say <Zugtyp + Zugnummer|ID(aus der Liste)|my>"
+				+ "/train types"
 				+ "<obligatorisch>, [optional], | = oder\nmy = aktiver Zug des Spielers"
 				+ "Bitte meldet Bugs mit /bug report <Bug>");
 	}
