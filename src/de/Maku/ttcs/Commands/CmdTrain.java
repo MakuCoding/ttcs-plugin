@@ -42,6 +42,7 @@ public class CmdTrain implements Command {
 							min = Integer.parseInt(args[2].split(":")[1]);
 						} catch (Exception e) {
 							p.sendMessage(plugin.prefix + ChatColor.DARK_RED + "Du musst eine Zeit im Format HH:MM angeben");
+							return true;
 						}
 						train = Trains.addTrain(args[1], stops, hour, min, p, plugin);
 						if (train == null) {
@@ -90,7 +91,7 @@ public class CmdTrain implements Command {
 						sb.append(t.getColor() + ((trains.indexOf(t) + 1) + ". " + t.getType() + t.getNumber() + ": "));
 						if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == t.getHour() && Calendar.getInstance().get(Calendar.MINUTE) <= t.getMin()) {
 							sb.append("Abfahrt " + t.getTime() + " Uhr von ");
-						} else if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) == t.getDay() && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <= t.getHour()) {
+						} else if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) == t.getDay() && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < t.getHour()) {
 							sb.append("Abfahrt " + t.getTime() + " Uhr von ");
 						} else {
 							sb.append(" Nächster Halt ");
@@ -215,7 +216,7 @@ public class CmdTrain implements Command {
 							if (args[1].equalsIgnoreCase("my") && tp.containsKey(p)) {
 								train = tp.get(p);
 								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + ": Nächster Halt: " +
-										train.getStops().get(train.getStopIndex()) + (train.getStops().size() == train.getStopIndex() && train.getEVU() != "DB Cargo" + 1?
+										train.getStops().get(train.getStopIndex()) + (train.getStops().size() == train.getStopIndex() + 1 && train.isTransportsPassengers() ?
 										"\nDieser Zug endet hier! Wir bitten alle Fahrgäste auszusteigen, verabschieden uns im Namen der "
 										+ train.getEVU() + " und wünschen Ihnen noch einen angenehmen Tag!":""));
 								tp.put(p, train);
@@ -226,7 +227,7 @@ public class CmdTrain implements Command {
 							}
 						} else {
 							Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + ": Nächster Halt: " +
-									train.getStops().get(train.getStopIndex()) + (train.getStops().size() == train.getStopIndex() && train.getEVU() != "DB Cargo" + 1?
+									train.getStops().get(train.getStopIndex()) + (train.getStops().size() == train.getStopIndex() + 1 && train.isTransportsPassengers()?
 									"\nDieser Zug endet hier! Wir bitten alle Fahrgäste auszusteigen, verabschieden uns im Namen der "
 									+ train.getEVU() + " und wünschen Ihnen noch einen angenehmen Tag!":""));
 							tp.put(p, train);
@@ -248,7 +249,7 @@ public class CmdTrain implements Command {
 								train = tp.get(p);
 								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + ": Nächster Halt: " +
 										train.getStops().get(train.getStopIndex()) + " Ankunft: " + hour + ":" + (min < 10 ? "0" + min:min) + " Uhr" 
-										+ (train.getStops().size() == train.getStopIndex() + 1?"\nDieser Zug endet hier! Wir bitten alle Fahrgäste "
+										+ (train.getStops().size() == train.getStopIndex() + 1 && train.isTransportsPassengers() ? "\nDieser Zug endet hier! Wir bitten alle Fahrgäste "
 										+ "auszusteigen, verabschieden uns im Namen der " + train.getEVU() + " und wünschen Ihnen noch einen angenehmen Tag!":""));
 								tp.put(p, train);
 								return true;
@@ -259,7 +260,7 @@ public class CmdTrain implements Command {
 						} else {
 							Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + ": Nächster Halt: " +
 									train.getStops().get(train.getStopIndex()) + " Ankunft: " + hour + ":" + (min < 10 ? "0" + min:min) + " Uhr" 
-									+ (train.getStops().size() == train.getStopIndex() + 1?"\nDieser Zug endet hier! Wir bitte alle Fahrgäste "
+									+ (train.getStops().size() == train.getStopIndex() + 1 && train.isTransportsPassengers() ? "\nDieser Zug endet hier! Wir bitte alle Fahrgäste "
 									+ "auszusteigen, verabschieden uns im Namen der " + train.getEVU() + " und wünschen Ihnen noch einen angenehmen Tag!":""));
 							tp.put(p, train);
 							return true;
@@ -276,13 +277,15 @@ public class CmdTrain implements Command {
 			case "dep":
 				if (p.hasPermission("ttcs.train.depart")) {
 					if (args.length == 2) {
-						train = Trains.depart(args[1]);
+						train = Trains.depart(plugin, args[1]);
 						if (train == null) {
 							if (args[1].equalsIgnoreCase("my") && tp.containsKey(p)) {
 								train = tp.get(p);
 								Trains.depart(train);
-								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + " fährt jetzt von " + train.getStops().get(train.getStopIndex() - 1) + " ab!");
+								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + " fährt jetzt von " + (train.getStops().size() == train.getStopIndex() + 1 ? train.getStops().get(train.getStopIndex()) : train.getStops().get(train.getStopIndex())) + " ab!");
 								train.setChecker(new Checker(plugin, train));
+								train.setHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
+								train.setMin(Calendar.getInstance().get(Calendar.MINUTE));
 								tp.put(p, train);
 								return true;
 							} else {
@@ -290,12 +293,9 @@ public class CmdTrain implements Command {
 								return true;
 							}
 						} else {
-							Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + " fährt jetzt von " + train.getStops().get(train.getStopIndex() - 1) + " ab!");
-							try {
-								if (train.getChecker().isAlive()) {
-									train.getChecker().interrupt();
-								}
-							} catch (Exception e) {}
+							train.setChecker(new Checker(plugin, train));
+							train.setHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
+							train.setMin(Calendar.getInstance().get(Calendar.MINUTE));
 							tp.put(p, train);
 							return true;
 						}
@@ -313,8 +313,8 @@ public class CmdTrain implements Command {
 						if (train == null) {
 							if (args[1].equalsIgnoreCase("my") && tp.containsKey(p)) {
 								train = tp.get(p);
-								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + " fährt um " + train.getTime() + " Uhr von " + train.getStops().get(train.getStopIndex()) + " ab!");
 								Trains.depart(train, dephour, depmin);
+								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + " fährt um " + train.getTime() + " Uhr von " + train.getStops().get(train.getStopIndex()) + " ab!");
 								String text = train.getColor() + train.getType() + train.getNumber() + " fährt jetzt von " + train.getStops().get(train.getStopIndex()) + " ab!";
 								train.setChecker(new Checker(plugin, train, text));
 								tp.put(p, train);
@@ -396,9 +396,7 @@ public class CmdTrain implements Command {
 					StringBuilder sb = new StringBuilder();
 					for (String evu:plugin.traintypes.getEVUs()) {
 						sb.append("\n" + ChatColor.getByChar(plugin.traintypes.getColor(evu)) + evu + ": ");
-						for (String type:plugin.traintypes.getTypes(evu)) {
-							sb.append(type + ", ");
-						}
+						sb.append(String.join(", ", plugin.traintypes.getTypes(evu)));
 						sb.delete(sb.length() - 2, sb.length());
 					}
 					p.sendMessage(plugin.prefix + "Verfügbare Zuggattungen:" + sb.toString());

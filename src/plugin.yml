@@ -1,11 +1,11 @@
 name: TTCS
-version: 1.0.3
+version: 1.0.4
 author: Maku
 main: de.Maku.ttcs.main.Main
 
 commands:
   train:
-    usage: /train announce|list|remove|delay|arrive|depart
+    usage: /train <announce|list|remove|delay|arrive|depart|skip|say|types> <Zugtyp + Zugnummer|ID(aus der Liste)|my>
   bug:
     usage: /bug report <Bugreport>
     

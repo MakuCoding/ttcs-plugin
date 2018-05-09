@@ -21,6 +21,24 @@ public class TrainTypes {
 							+ "Unter Farbcodes können die Farben für das jeweilige EVU festgelegt werden (Minecraft-Farbcodes)\n"
 							+ "Für jedes EVU wird eine Liste mit verfügbaren Zugtypenabkürzungen angelegt");
 		if (!b) setDefaults();
+		else if (!config.contains("Farbcodes")) {
+			config.set("Farbcodes.DB Fernverkehr", "f");
+			config.set("Farbcodes.DB Regio", "c");
+			config.set("Farbcodes.DB Cargo", "b");
+			config.set("Farbcodes.Privatbahnen", "a");
+		} else if (!config.contains("EVUs")) {
+			List<String> list1 = new ArrayList<String>();
+			list1.add("DB Fernverkehr");
+			list1.add("DB Regio");
+			list1.add("DB Cargo");
+			list1.add("Privatbahnen");
+			config.set("EVUs", list1);
+		} else if (!config.contains("TransportiertPassagiere")) {
+			config.set("TransportiertPassagiere.DB Fernverkehr", true);
+			config.set("TransportiertPassagiere.DB Regio", true);
+			config.set("TransportiertPassagiere.DB Cargo", false);
+			config.set("TransportiertPassagiere.Privatbahnen", true);
+		}
 		try {save();} catch (Exception e) {}
 	}
 	
@@ -80,6 +98,10 @@ public class TrainTypes {
 	
 	public char getColor(String evu) {
 		return config.getString("Farbcodes." + evu).charAt(0);
+	}
+	
+	public boolean getPassenger(String evu) {
+		return config.getBoolean("TransportiertPassagiere." + evu);
 	}
 
 }

@@ -26,7 +26,6 @@ public class Checker extends Thread {
 	
 	public void run() {
 		while (true) {
-			try {
 				if (text != "" && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == train.getHour() && Calendar.getInstance().get(Calendar.MINUTE) == train.getMin()) {
 					Bukkit.broadcastMessage(plugin.prefix + text);
 					if (train.getStopIndex() < train.getStops().size() - 1) train.addStopIndex();
@@ -39,8 +38,7 @@ public class Checker extends Thread {
 					Trains.remTrain(train);
 					break;
 				}
-				Thread.sleep(60000);
-			} catch (Exception e) {}
+				try {Thread.sleep(60000);} catch (Exception e) {break;}
 		}
 	}
 

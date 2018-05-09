@@ -3,6 +3,7 @@ package de.Maku.ttcs.trains;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -25,6 +26,7 @@ public class Trains {
 	private ChatColor color;
 	private String evu;
 	private Player player;
+	private boolean transportsPassengers;
 	private Thread checker;
 	
 	private static ArrayList<Trains> trains = new ArrayList<Trains>();
@@ -65,7 +67,7 @@ public class Trains {
 		
 		for (String s:plugin.traintypes.getEVUs()) {
 			if (plugin.traintypes.getTypes(s).contains(type)) {
-				neu = new Trains(type, number, stops, hour, min, ChatColor.getByChar(plugin.traintypes.getColor(s)), s, player);
+				neu = new Trains(type, number, stops, hour, min, ChatColor.getByChar(plugin.traintypes.getColor(s)), s, player, plugin);
 				neu.setChecker(new Checker(plugin, neu));
 			}
 		}
@@ -148,15 +150,17 @@ public class Trains {
 		}
 	}
 	
-	public static Trains depart(String id) {
+	public static Trains depart(Main plugin, String id) {
 		Trains train = null;
 		try {
 			train = trains.get(Integer.parseInt(id) - 1);
+			Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + " fährt jetzt von " + train.getStops().get(train.getStopIndex()) + " ab!");
 			if (train.getStopIndex() < train.getStops().size() - 1) train.addStopIndex();
 		} catch (Exception e) {
 			for (Trains t:trains) {
 				if ((t.getType() + t.getNumber()).equalsIgnoreCase(id)) {
-					if (t.getStopIndex() < train.getStops().size() - 1) t.addStopIndex();
+					Bukkit.broadcastMessage(plugin.prefix + t.getColor() + t.getType() + t.getNumber() + " fährt jetzt von " + t.getStops().get(t.getStopIndex()) + " ab!");
+						if (t.getStopIndex() < t.getStops().size() - 1) t.addStopIndex();
 					return t;
 				}
 			}
@@ -231,7 +235,7 @@ public class Trains {
 		return null;
 	}
 	
-	public Trains(String type, String number, ArrayList<String> stops, int hour, int min, ChatColor color, String evu, Player player) {
+	public Trains(String type, String number, ArrayList<String> stops, int hour, int min, ChatColor color, String evu, Player player, Main plugin) {
 		this.type = type;
 		this.number = number;
 		this.stops = stops;
@@ -246,6 +250,7 @@ public class Trains {
 		this.color = color;
 		this.evu = evu;
 		this.player = player;
+		this.setTransportsPassengers(plugin.traintypes.getPassenger(evu));
 		this.checker = null;
 	}
 
@@ -266,7 +271,7 @@ public class Trains {
 			return this.hour + ":0" + this.min;
 		} else if (this.min > 9 && this.hour < 10) {
 			return "0" + this.hour + ":" + this.min;
-		} else if (this.min > 10 && this.hour > 10) {
+		} else if (this.min < 10 && this.hour < 10) {
 			return "0" + this.hour + ":0" + this.min;
 		} else {
 			return this.hour + ":" + this.min;
@@ -316,6 +321,11 @@ public class Trains {
 	public Player getPlayer() {
 		return this.player;
 	}
+
+	public boolean isTransportsPassengers() {
+		return transportsPassengers;
+	}
+
 	
 	public Thread getChecker() {
 		return this.checker;
@@ -391,6 +401,10 @@ public class Trains {
 		} catch (Exception e) {}
 		this.checker = checker;
 		this.checker.start();
+	}
+
+	public void setTransportsPassengers(boolean transportsPassengers) {
+		this.transportsPassengers = transportsPassengers;
 	}
 	
 }
