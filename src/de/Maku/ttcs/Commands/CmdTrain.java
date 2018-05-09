@@ -392,7 +392,7 @@ public class CmdTrain implements Command {
 				}
 				
 			case "types":
-				if (p.hasPermission("ttcs.train.announce")) {
+				if (p.hasPermission("ttcs.train.types")) {
 					StringBuilder sb = new StringBuilder();
 					for (String evu:plugin.traintypes.getEVUs()) {
 						sb.append("\n" + ChatColor.getByChar(plugin.traintypes.getColor(evu)) + evu + ": ");

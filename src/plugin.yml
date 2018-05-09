@@ -24,3 +24,7 @@ permissions:
     default: op
   ttcs.train.skip:
     default: op
+  ttcs.train.say:
+    default: op
+  ttcs.train.types:
+    default: true
