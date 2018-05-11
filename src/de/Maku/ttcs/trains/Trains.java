@@ -80,10 +80,12 @@ public class Trains {
 		Trains train = null;
 		try {
 			train = trains.get(Integer.parseInt(id) - 1);
-			trains.remove(trains.get(Integer.parseInt(id) - 1));
+			train.getChecker().interrupt();
+			trains.remove(train);
 		} catch (Exception e) {
 			for (Trains t:trains) {
 				if ((t.getType() + t.getNumber()).equalsIgnoreCase(id)) {
+					t.getChecker().interrupt();
 					trains.remove(t);
 					return t;
 				}
@@ -94,6 +96,7 @@ public class Trains {
 
 	public static boolean remTrain(Trains train) {
 		if (trains.contains(train)) {
+			train.getChecker().interrupt();
 			return trains.remove(train);
 		}
 		return false;

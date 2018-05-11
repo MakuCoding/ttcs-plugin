@@ -101,6 +101,7 @@ public class CmdTrain implements Command {
 						}
 						sb.delete(sb.length() - 4, sb.length());
 						sb.append(t.getDelay() != 0 ? " (+" + t.getDelay() + " Minuten" + (t.getDelayReason() != "" ? " wegen: " + t.getDelayReason():"") + ")\n":"\n");
+						sb.append("(Erstellt von " + t.getPlayer().getName() + ")");
 					}
 					if (trains.size() > 0) {
 					p.sendMessage("----------------Angekündigte Zugfahrten----------------\n" +
@@ -114,6 +115,7 @@ public class CmdTrain implements Command {
 				
 			case "remove":
 			case "rem":
+			case "rm":
 				if (p.hasPermission("ttcs.train.remove")) {
 					if (args.length == 2) {
 						train = Trains.remTrain(args[1]);
