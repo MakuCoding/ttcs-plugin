@@ -100,8 +100,8 @@ public class CmdTrain implements Command {
 							sb.append(t.getStops().get(i) + " -> ");
 						}
 						sb.delete(sb.length() - 4, sb.length());
-						sb.append(t.getDelay() != 0 ? " (+" + t.getDelay() + " Minuten" + (t.getDelayReason() != "" ? " wegen: " + t.getDelayReason():"") + ")\n":"\n");
-						sb.append("(Erstellt von " + t.getPlayer().getName() + ")");
+						sb.append(t.getDelay() != 0 ? " (+" + t.getDelay() + " Minuten" + (t.getDelayReason() != "" ? " wegen: " + t.getDelayReason():"") + ")":"");
+						sb.append(" (Erstellt von " + t.getPlayer().getName() + ")\n");
 					}
 					if (trains.size() > 0) {
 					p.sendMessage("----------------Angekündigte Zugfahrten----------------\n" +
@@ -283,8 +283,8 @@ public class CmdTrain implements Command {
 						if (train == null) {
 							if (args[1].equalsIgnoreCase("my") && tp.containsKey(p)) {
 								train = tp.get(p);
+								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + " fährt jetzt von " + train.getStops().get(train.getStopIndex()) + " ab!");
 								Trains.depart(train);
-								Bukkit.broadcastMessage(plugin.prefix + train.getColor() + train.getType() + train.getNumber() + " fährt jetzt von " + (train.getStops().size() == train.getStopIndex() + 1 ? train.getStops().get(train.getStopIndex()) : train.getStops().get(train.getStopIndex())) + " ab!");
 								train.setChecker(new Checker(plugin, train));
 								train.setHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
 								train.setMin(Calendar.getInstance().get(Calendar.MINUTE));
